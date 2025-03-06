@@ -7,6 +7,11 @@ import { Reservation } from '../models/reservation';
 export class ReservationService {
   private reservations: Reservation[] = [];
   
+  constructor() {
+    const savedReservations = localStorage.getItem('reservations');
+    this.reservations = savedReservations ? JSON.parse(savedReservations) : [];
+  }
+
   //CRUD operations
   getReservations(): Reservation[] {
     return this.reservations;
@@ -22,6 +27,7 @@ export class ReservationService {
 
   addReservation(reservation: Reservation): void {
     this.reservations.push(reservation);
+    localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
 
   updateReservation(reservation: Reservation): void {
@@ -30,6 +36,7 @@ export class ReservationService {
       throw new Error(`Reservation with id ${reservation.id} not found`);
     }
     this.reservations[index] = reservation;
+    localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
 
   deleteReservation(id: string): void {
@@ -38,5 +45,6 @@ export class ReservationService {
       throw new Error(`Reservation with id ${id} not found`);
     }
     this.reservations.splice(index, 1);
+    localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
 }
