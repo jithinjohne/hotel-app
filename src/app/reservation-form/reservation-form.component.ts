@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validator, FormBuilder, Validators } from '@angular/forms';
+import { ReservationService } from '../reservation/reservation.service';
 
 @Component({
   selector: 'app-reservation-form',
@@ -16,7 +17,8 @@ export class ReservationFormComponent implements OnInit{
     roomNumber: ['', Validators.required]
   });
 
-  constructor(private fromBuilder: FormBuilder) {
+  constructor(private fromBuilder: FormBuilder,
+    private reservationService: ReservationService) {
 
   }
 
@@ -30,12 +32,10 @@ export class ReservationFormComponent implements OnInit{
     });
   }
 
-
-
   onSubmit() {
     if(this.reservationForm.valid) {
-      console.warn(this.reservationForm.value);
+      this.reservationService.addReservation(this.reservationForm.value);
+      this.reservationForm.reset();
     }
   }
-
 }
