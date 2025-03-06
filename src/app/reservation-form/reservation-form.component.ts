@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validator, FormBuilder, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ReservationService } from '../reservation/reservation.service';
 
 @Component({
@@ -7,8 +8,8 @@ import { ReservationService } from '../reservation/reservation.service';
   templateUrl: './reservation-form.component.html',
   styleUrls: ['./reservation-form.component.css']
 })
-export class ReservationFormComponent implements OnInit{
-  
+export class ReservationFormComponent implements OnInit {
+
   reservationForm: FormGroup = this.fromBuilder.group({
     checkInDate: ['', Validators.required],
     checkOutDate: ['', Validators.required],
@@ -18,7 +19,10 @@ export class ReservationFormComponent implements OnInit{
   });
 
   constructor(private fromBuilder: FormBuilder,
-    private reservationService: ReservationService) {
+    private reservationService: ReservationService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {
 
   }
 
@@ -30,12 +34,25 @@ export class ReservationFormComponent implements OnInit{
       guestEmail: ['', Validators.required],
       roomNumber: ['', Validators.required],
     });
+
+    let id = this.activatedRoute.snapshot.paramMap.get('id');
+    if (id) {
+      let reservation = this.reservationService.getReservation(id);
+      this.reservationForm.patchValue(reservation);
+    }
   }
 
   onSubmit() {
-    if(this.reservationForm.valid) {
-      this.reservationService.addReservation(this.reservationForm.value);
-      this.reservationForm.reset();
+    if (this.reservationForm.valid) {
+      let reservation = this.reservationForm.value;
+      let id = this.activatedRoute.snapshot.paramMap.get('id');
+      if (id) {
+        this.reservationService.updateReservation(id, reservation);
+      } else {
+        this.reservationService.addReservation(reservation);
+        this.reservationForm.reset();
+      }
+      this.router.navigate(['/list']);
     }
   }
 }

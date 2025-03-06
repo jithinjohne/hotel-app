@@ -6,7 +6,7 @@ import { Reservation } from '../models/reservation';
 })
 export class ReservationService {
   private reservations: Reservation[] = [];
-  
+
   constructor() {
     const savedReservations = localStorage.getItem('reservations');
     this.reservations = savedReservations ? JSON.parse(savedReservations) : [];
@@ -26,16 +26,17 @@ export class ReservationService {
   }
 
   addReservation(reservation: Reservation): void {
+    reservation.id = Date.now().toString();
     this.reservations.push(reservation);
     localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
 
-  updateReservation(reservation: Reservation): void {
-    const index = this.reservations.findIndex(r => r.id === reservation.id);
+  updateReservation(id: string, updatedReservation: Reservation): void {
+    const index = this.reservations.findIndex(r => r.id === id);
     if (index === -1) {
-      throw new Error(`Reservation with id ${reservation.id} not found`);
+      throw new Error(`Reservation with id ${updatedReservation.id} not found`);
     }
-    this.reservations[index] = reservation;
+    this.reservations[index] = updatedReservation;
     localStorage.setItem('reservations', JSON.stringify(this.reservations));
   }
 
